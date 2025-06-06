@@ -2,7 +2,7 @@
 // @name            CleanTvOrange
 // @name:fr         Nettoyeur tv d'orange
 // @namespace       Crabman
-// @version         0.9
+// @version         1.0
 // @description     Hides paid/unwanted channels for + readability and places favorites at the top of the list. You can have 2 favorite categories, for example the ones you watch all the time, then the ones you monitor, or maybe just the channels for the kids.
 // @description:fr  Cache les chaines payantes/non désirées pour + de lisibilité et place les favorites en haut de la liste. Vous pouvez avoir 2 catégories favorites, par exemple celles dont vous regardez tout le temps, puis celles dont vous surveillez, ou peut être juste les chaines pour les enfants.
 // @author          Crabman77
@@ -21,10 +21,13 @@
     const config = {};
     config.channels = GM_getValue("channels", {});
     config.hideIsPaid = GM_getValue("hideIsPaid", false);
+    config.volume = GM_getValue("volume", "100");
     const listedChannels = [];
     const paidChannels = {};
     const options = {"Enlever": "0", "Normal": "1", "Favori 1": "2", "Favori 2": "3"};
     const channelsInfo = {'01tv': {'name': 'Tech&Co', 'category': 'Actu Tech', 'langue': 'fr', 'number': '141'},
+                          '13eme_rue': {'name': '13EME RUE', 'category': 'Cinéma', 'langue': 'fr', 'number': '84'},
+                          '20_minutes_tv_idf': {'name': '20 minutes TV IDF', 'category': 'Locales', 'langue': 'fr', 'number': '349'},
                           '2mmonde': {'name': '2M Monde', 'category': 'Généraliste/Maroc', 'langue': 'ar', 'number': '521'},
                           '2stv': {'name': '2STV', 'category': 'Généraliste/Sénégal', 'langue': 'fr', 'number': '591'},
                           '6ter': {'name': '6TER', 'category': 'Généraliste', 'langue': 'fr', 'number': '22'},
@@ -44,6 +47,8 @@
                           'alaraby2': {'name': 'ALARABY TELEVISION', 'category': 'Actualités/Divertissement général', 'langue': 'ar', 'number': '503'},
                           'all_flamenco': {'name': 'ALL FLAMENCO', 'category': 'Musique/Flamenco', 'langue': 'es', 'number': '438'},
                           'alma_lusa': {'name': 'ALMA LUSA', 'category': 'Culture/Portugal', 'langue': 'pt', 'number': '453'},
+                          'alpe_d_huez_television': {'name': "Alpe d'Huez TV", 'category': 'Locales', 'langue': 'fr', 'number': '360'},
+                          'angers_television': {'name': 'ANGERS TELE', 'category': 'Locales', 'langue': 'fr', 'number': '344'},
                           'Animaux': {'name': 'ANIMAUX', 'category': 'Documentaire/Nature', 'langue': 'fr', 'number': '120'},
                           'antena_3': {'name': 'ANTENA 3', 'category': 'Généraliste/Espagne', 'langue': 'es', 'number': '434'},
                           'aplus': {'name': 'A+', 'category': 'Divertissement/Séries', 'langue': 'fr', 'number': '598'},
@@ -69,8 +74,10 @@
                           'beinsportsmax9': {'name': 'beIN Sports Max 9', 'category': 'Sport', 'langue': 'fr', 'number': '184'},
                           'bet': {'name': 'BET', 'category': 'Divertissement/Culture afro-américaine', 'langue': 'en', 'number': '77'},
                           'beur_fm_tv': {'name': 'BEUR FM TV', 'category': 'Culture/Divers', 'langue': 'fr', 'number': '500'},
+                          'bfm_lyon': {'name': 'BFM LYON', 'category': 'Information', 'langue': 'fr', 'number': '341'},
+                          'bfm_marseille': {'name': 'BFM MARSEILLE PROVENCE', 'category': 'Information', 'langue': 'fr', 'number': '342'},
                           'bfmbusiness': {'name': 'BFM BUSINESS', 'category': 'Information', 'langue': 'fr', 'number': '228'},
-                          'bfmtv': {'name': 'BFM TV', 'category': 'Information', 'langue': 'fr', 'number': '15'},
+                          'bfmtv': {'name': 'BFM TV', 'category': 'Information', 'langue': 'fr', 'number': '13'},
                           'bloombergeurope': {'name': 'BLOOMBERG EUROPE', 'category': 'Actualités économiques', 'langue': 'en', 'number': '236'},
                           'boing': {'name': 'CARTOONITO', 'category': 'Jeunesse', 'langue': 'fr', 'number': '96'},
                           'boomerang': {'name': 'BOOMERANG', 'category': 'Jeunesse/Animation', 'langue': 'fr', 'number': '94'},
@@ -84,7 +91,7 @@
                           'canal_j': {'name': 'CANAL J', 'category': 'Jeunesse', 'langue': 'fr', 'number': '98'},
                           'canal_sport': {'name': 'CANAL+SPORT', 'category': 'Sport', 'langue': 'fr', 'number': '44'},
                           'canalalgerie': {'name': 'CANAL ALGERIE', 'category': 'Généraliste', 'langue': 'fr', 'number': '505'},
-                          'canalplus': {'name': 'CANAL+', 'category': 'Généraliste', 'langue': 'fr', 'number': '4'},
+                          'canalplus': {'name': 'CANAL+', 'category': 'Généraliste', 'langue': 'fr', 'number': '40'},
                           'canalplus_box_office': {'name': 'CANAL+BOX OFFICE', 'category': 'Cinéma', 'langue': 'fr', 'number': '45'},
                           'canalplus_docs': {'name': 'CANAL+DOCS', 'category': 'Documentaire', 'langue': 'fr', 'number': '48'},
                           'canalplus_foot': {'name': 'CANAL+FOOT', 'category': 'Sport', 'langue': 'fr', 'number': '43'},
@@ -118,6 +125,7 @@
                           'directstar': {'name': 'CSTAR', 'category': 'Musique/Divertissement', 'langue': 'fr', 'number': '17'},
                           'discovery_investigation': {'name': 'DISCOVERY INVESTIGATION', 'category': 'Crime/Documentaire', 'langue': 'fr', 'number': '116'},
                           'disney_channel': {'name': 'DISNEY CHANNEL', 'category': 'Jeunesse/Divertissement', 'langue': 'en', 'number': '90'},
+                          'dreamworks': {'name': 'DREAMWORKS', 'category': 'Jeunesse', 'langue': 'fr', 'number': '103'},
                           'dubaitv': {'name': 'DUBAI TV', 'category': 'Généraliste', 'langue': 'ar', 'number': '502'},
                           'e_entertainment': {'name': 'E!', 'category': 'Divertissement/Célébrités', 'langue': 'fr', 'number': '75'},
                           'Echorouk_News': {'name': 'ECHOROUK NEWS', 'category': 'Actualités', 'langue': 'ar', 'number': '520'},
@@ -168,7 +176,7 @@
                           'france3provence': {'name': 'FRANCE 3 PROVENCE ALPES', 'category': 'Régionale', 'langue': 'fr', 'number': '323'},
                           'france3pyrenees': {'name': 'FRANCE 3 MIDI-PYRENEES', 'category': 'Régionale', 'langue': 'fr', 'number': '317'},
                           'france3rhalpes': {'name': 'FRANCE 3 PROVENCE ALPES', 'category': 'Régionale', 'langue': 'fr', 'number': '323'},
-                          'france4': {'name': 'FRANCE 4', 'category': 'Jeunesse', 'langue': 'fr', 'number': '14'},
+                          'france4': {'name': 'FRANCE 4', 'category': 'Jeunesse', 'langue': 'fr', 'number': '4'},
                           'france5': {'name': 'FRANCE 5', 'category': 'Culturel', 'langue': 'fr', 'number': '5'},
                           'franceinfo': {'name': 'FRANCEINFO', 'category': 'Information', 'langue': 'fr', 'number': '27'},
                           'fusion_tv': {'name': 'FUSION TV', 'category': 'Musique', 'langue': 'fr', 'number': '405'},
@@ -176,7 +184,7 @@
                           'gameone': {'name': 'GAME ONE', 'category': 'Jeux vidéo', 'langue': 'fr', 'number': '83'},
                           'GreatWallElite': {'name': 'GREAT WALL ELITE', 'category': 'Documentaire', 'langue': 'zh', 'number': '562'},
                           'guangdong_south_tv': {'name': 'GRT GBA Satellite TV', 'category': 'Généraliste', 'langue': 'zh', 'number': '561'},
-                          'gulli': {'name': 'GULLI', 'category': 'Jeunesse', 'langue': 'fr', 'number': '18'},
+                          'gulli': {'name': 'GULLI', 'category': 'Jeunesse', 'langue': 'fr', 'number': '12'},
                           'haberturk': {'name': 'HABERTURK', 'category': 'Actualités', 'langue': 'tr', 'number': '490'},
                           'hd1': {'name': 'TF1 SERIES FILMS', 'category': 'Généraliste', 'langue': 'fr', 'number': '20'},
                           'histoire': {'name': 'HISTOIRE TV', 'category': 'Documentaire', 'langue': 'fr', 'number': '124'},
@@ -187,20 +195,23 @@
                           'iotv': {'name': 'IO TV', 'category': 'Technologie', 'langue': 'fr', 'number': '402'},
                           'iqraa': {'name': 'IQRAA', 'category': 'Religieux', 'langue': 'ar', 'number': '515'},
                           'iqraa_international': {'name': 'IQRAA INTERNATIONAL', 'category': 'Religieux', 'langue': 'ar', 'number': '516'},
-                          'itelevision': {'name': 'CNEWS', 'category': 'Information', 'langue': 'fr', 'number': '16'},
+                          'itelevision': {'name': 'CNEWS', 'category': 'Information', 'langue': 'fr', 'number': '14'},
                           'j_one': {'name': 'J-ONE', 'category': 'Divertissement', 'langue': 'ar', 'number': '147'},
                           'jiangsu_international_tv': {'name': 'JIANGSU INTERNATIONAL TV', 'category': 'Généraliste', 'langue': 'zh', 'number': '560'},
                           'journal_du_golf_tv': {'name': 'JOURNAL DU GOLF TV', 'category': 'Sport', 'langue': 'fr', 'number': '172'},
                           'kanal_austral': {'name': 'KANAL AUSTRAL.TV', 'category': 'Généraliste', 'langue': 'fr', 'number': '410'},
+                          'kanaldude': {'name': 'Kanaldude', 'category': 'Locales', 'langue': 'fr', 'number': '358'},
                           'kbs_world': {'name': 'KBS WORLD', 'category': 'Généraliste/Culture coréenne', 'langue': 'ko', 'number': '565'},
                           'kmt': {'name': 'KMT', 'category': 'Généraliste', 'langue': 'fr', 'number': '401'},
                           'kourou_tv': {'name': 'KOUROU TELEVISION', 'category': 'Locale', 'langue': 'fr', 'number': '400'},
                           'kto': {'name': 'KTO', 'category': 'Religieux (catholique)', 'langue': 'fr', 'number': '220'},
                           'la_chaine_meteo': {'name': 'LA CHAINE METEO', 'category': 'Météo', 'langue': 'fr', 'number': '231'},
                           'lbc_sat': {'name': 'LBC SAT', 'category': 'Généraliste', 'langue': 'ar', 'number': '533'},
-                          'lcimobile_UMTS': {'name': 'LCI', 'category': 'Information', 'langue': 'fr', 'number': '26'},
+                          'lcimobile_UMTS': {'name': 'LCI', 'category': 'Information', 'langue': 'fr', 'number': '16'},
                           'lcp_100_pourcent': {'name': 'LCP 100%', 'category': 'Politique/Société', 'langue': 'fr', 'number': '223'},
-                          'lcp_umts': {'name': 'LCP/PS', 'category': 'Politique/Société', 'langue': 'fr', 'number': '13'},
+                          'lcp_umts': {'name': 'LCP/PS', 'category': 'Politique/Société', 'langue': 'fr', 'number': '8'},
+                          'le_figaro_tv_idf': {'name': 'LE FIGARO TV IDF', 'category': 'Locales', 'langue': 'fr', 'number': '345'},
+                          'lmtvsarthe': {'name': 'LMTV SARTHE', 'category': 'Locales', 'langue': 'fr', 'number': '346'},
                           'luckyjack': {'name': 'LUCKY JACK', 'category': 'Divertissement/Jeux', 'langue': 'fr', 'number': '211'},
                           'luxe': {'name': 'LUXE TV', 'category': 'Style de vie/Luxe', 'langue': 'fr', 'number': '215'},
                           'm6_4k': {'name': 'M6 4K', 'category': 'Généraliste/Divertissement', 'langue': 'fr', 'number': '906'},
@@ -211,6 +222,7 @@
                           'mandarin_tv': {'name': 'MANDARIN TV', 'category': 'Culture chinoise/Divertissement', 'langue': 'zh', 'number': '549'},
                           'mangas': {'name': 'MANGAS', 'category': 'Animation japonaise', 'langue': 'fr', 'number': '145'},
                           'marmiton_tv': {'name': 'MARMITON TV', 'category': 'Cuisine', 'langue': 'fr', 'number': '117'},
+                          'matele': {'name': 'Matélé', 'category': 'Locales', 'langue': 'fr', 'number': '347'},
                           'mbc': {'name': 'MBC', 'category': 'Généraliste', 'langue': 'ar', 'number': '507'},
                           'mbc_5': {'name': 'MBC 5', 'category': 'Généraliste/Maghreb', 'langue': 'ar', 'number': '530'},
                           'mcm': {'name': 'MCM', 'category': 'Musique', 'langue': 'fr', 'number': '139'},
@@ -223,6 +235,7 @@
                           'mezzo': {'name': 'MEZZO', 'category': 'Musique classique/Jazz', 'langue': 'fr', 'number': '167'},
                           'mezzolivehd': {'name': 'MEZZO LIVE', 'category': 'Musique classique/Live', 'langue': 'fr', 'number': '168'},
                           'mfm': {'name': 'MADRAS FM TV', 'category': 'Musique/Variété française', 'langue': 'fr', 'number': '399'},
+                          'mirabelletv': {'name': 'Moselle TV', 'category': 'Locales', 'langue': 'fr', 'number': '351'},
                           'mtv': {'name': 'MTV', 'category': 'Musique/Divertissement', 'langue': 'en', 'number': '76'},
                           'mtv_hits': {'name': 'MTV HITS', 'category': 'Musique', 'langue': 'en', 'number': '152'},
                           'museum_channel': {'name': 'MUSEUM TV', 'category': 'Art/Culture', 'langue': 'fr', 'number': '112'},
@@ -240,6 +253,7 @@
                           'nollywood_tv_epic': {'name': 'NOLLYWOOD TV EPIC', 'category': 'Cinéma africain', 'langue': 'fr', 'number': '611'},
                           'nouvelle_aquitaine': {'name': 'FRANCE 3 NoA', 'category': 'Régionale', 'langue': 'fr', 'number': '326'},
                           'novelas': {'name': 'NOVELAS TV', 'category': 'Séries/Télénovelas', 'langue': 'fr', 'number': '607'},
+                          'novo19': {'name': 'Novo19', 'category': 'Généraliste', 'langue': 'fr', 'number': '19'},
                           'nrjhits': {'name': 'NRJ HITS', 'category': 'Musique', 'langue': 'fr', 'number': '151'},
                           'nt1_umts': {'name': 'TFX', 'category': 'Généraliste', 'langue': 'fr', 'number': '11'},
                           'ntdtv': {'name': 'NTD TV', 'category': 'Culture chinoise/Actualités', 'langue': 'zh', 'number': '548'},
@@ -297,11 +311,16 @@
                           'sqool_tv': {'name': 'SQOOL TV', 'category': 'Jeunesse/Éducation', 'langue': 'fr', 'number': '217'},
                           'star_tve': {'name': 'STAR TVE', 'category': 'Divertissement/Séries', 'langue': 'es', 'number': '435'},
                           'sunu_yeuf': {'name': 'SUNU YEUF', 'category': 'Culture/Afrique', 'langue': 'fr', 'number': '609'},
+                          'syfy': {'name': 'SYFY', 'category': 'Séries', 'langue': 'fr', 'number': '85'},
+                          't18': {'name': 'T18', 'category': 'Généraliste', 'langue': 'fr', 'number': '18'},
                           'tamazight': {'name': 'TAMAZIGHT', 'category': 'Culture/Maghreb', 'langue': 'tzm', 'number': '499'},
                           'tcm': {'name': 'TCM CINEMA', 'category': 'Cinéma/Classiques', 'langue': 'fr', 'number': '63'},
                           'tcm_vo': {'name': 'TCM CINEMA (VO)', 'category': 'Cinéma/Classiques', 'langue': 'en', 'number': '413'},
+                          'tebeo': {'name': 'Tébéo', 'category': 'Locales', 'langue': 'fr', 'number': '353'},
                           'tele_antilles': {'name': 'TELE ANTILLES', 'category': 'Généraliste/Caraïbes', 'langue': 'fr', 'number': '398'},
                           'tele_congo': {'name': 'TELE CONGO', 'category': 'Généraliste (Congo)', 'langue': 'fr', 'number': '596'},
+                          'telegrenobleisere': {'name': 'Télé Grenoble Isère', 'category': 'Locales', 'langue': 'fr', 'number': '348'},
+                          'telenantes': {'name': 'TéléNantes', 'category': 'Locales', 'langue': 'fr', 'number': '354'},
                           'teletoon': {'name': 'TELETOON+', 'category': 'Jeunesse', 'langue': 'fr', 'number': '106'},
                           'teletoonplus1': {'name': 'TELETOON +1', 'category': 'Jeunesse', 'langue': 'fr', 'number': '107'},
                           'teva': {'name': 'TEVA', 'category': 'Bien-être/Mode', 'langue': 'fr', 'number': '35'},
@@ -328,21 +347,28 @@
                           'tv3_catalunya': {'name': 'TV3 CATALUNYA', 'category': 'Généraliste/Culture', 'langue': 'ca', 'number': '439'},
                           'tv5': {'name': 'TV5MONDE', 'category': 'Généraliste/International', 'langue': 'fr', 'number': '33'},
                           'tv5_television': {'name': 'TV5 TURKEY', 'category': 'Généraliste/Espagne', 'langue': 'es', 'number': '491'},
+                          'tv7': {'name': 'TV7', 'category': 'Locales', 'langue': 'fr', 'number': '355'},
+                          'tv8montblanc': {'name': '8 MONT-BLANC', 'category': 'Locales', 'langue': 'fr', 'number': '343'},
                           'tv_de_galicia': {'name': 'TV DE GALICIA', 'category': 'Généraliste/Espagne', 'langue': 'gl', 'number': '441'},
                           'tv_kreol': {'name': 'TELE KREOL', 'category': 'Généraliste/Îles Maurice/Réunion', 'langue': 'fr', 'number': '409'},
                           'tv_monaco': {'name': 'TVMONACO', 'category': 'Généraliste/Monaco', 'langue': 'fr', 'number': '412'},
                           'tv_pitchoun_kids_music': {'name': 'TV PITCHOUN KIDS MUSIC', 'category': 'Jeunesse/Musique', 'langue': 'fr', 'number': '149'},
+                          'tv_tours_val_de_loire': {'name': 'Val de Loire TV', 'category': 'Locales', 'langue': 'fr', 'number': '361'},
                           'tvbreizh_umts': {'name': 'TV BREIZH', 'category': 'Divertissement/Séries', 'langue': 'fr', 'number': '37'},
                           'tvei': {'name': 'TVE INTERNACIONAL', 'category': 'Culture/Éducation', 'langue': 'pt', 'number': '433'},
                           'tviinternacional': {'name': 'TVI INTERNACIONAL', 'category': 'Généraliste/Portugal', 'langue': 'pt', 'number': '447'},
+                          'tvr': {'name': 'TVR', 'category': 'Locales', 'langue': 'fr', 'number': '352'},
                           'tvrecord': {'name': 'TV RECORD', 'category': 'Généraliste/Brésil', 'langue': 'pt', 'number': '450'},
                           'tvri': {'name': 'TVRI', 'category': 'Généraliste/Indonésie', 'langue': 'id', 'number': '488'},
                           'tvt': {'name': 'TVT', 'category': 'Généraliste', 'langue': 'fr', 'number': '602'},
                           'ushuaia': {'name': 'USHUAIA TV', 'category': 'Documentaire/Nature', 'langue': 'fr', 'number': '125'},
+                          'viaoccitanie_montpellier': {'name': 'ViàOccitanie Montpellier', 'category': 'Locales', 'langue': 'fr', 'number': '359'},
+                          'vosgestv': {'name': 'VOSGES TV', 'category': 'Locales', 'langue': 'fr', 'number': '350'},
                           'voxafrica': {'name': 'VOXAFRICA', 'category': 'Culture/Afrique', 'langue': 'fr', 'number': '587'},
                           'vplus_tvi': {'name': 'V+ TVI', 'category': 'Généraliste/Portugal', 'langue': 'pt', 'number': '451'},
                           'w9': {'name': 'W9', 'category': 'Divertissement/Musique', 'langue': 'fr', 'number': '9'},
                           'warner_tv': {'name': 'Warner TV', 'category': 'Séries', 'langue': 'fr', 'number': '78'},
+                          'weo_nord_pas_de_calais': {'name': 'WEO TV La Voix du Nord', 'category': 'Locales', 'langue': 'fr', 'number': '356'},
                           'zhejiang_international_tv': {'name': 'ZHEJIANG INTERNATIONAL TV', 'category': 'Généraliste/Chine', 'langue': 'zh', 'number': '556'},
                           'zitata': {'name': 'ZITATA TV', 'category': 'Musique', 'langue': 'fr', 'number': '403'}};
 
@@ -721,17 +747,33 @@
             favMosaic2.remove();
         }
     };
+    function restoreVolume() {
+        let volume = config.volume;
+        const slider = document.getElementsByClassName('slider')[0];
+        if (slider) {
+            slider.value = volume;
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("input", false, true);
+            slider.dispatchEvent(evt);
+            slider.addEventListener('change', () => {
+                config.volume = slider.value;
+                GM_setValue("volume", config.volume);
+            });
+        }
+    };
     function afterLoading(){
         let url = window.location.href;
         if (url.search("en-direct/programmes-en-cours") != -1) {
-            setTimeout(sortChannels, 400);
+            setTimeout(sortChannels, 1000);
+        } else if (url.search("/lecture/") != -1) {
+            setTimeout(restoreVolume, 500);
         }
     };
 
     if (window.onurlchange === null) {
         // feature is supported
         window.addEventListener('urlchange', function () {
-            setTimeout(afterLoading, 200);
+            setTimeout(afterLoading, 1000);
         });
     } else {
         document.addEventListener("load", afterLoading);
@@ -893,7 +935,7 @@
             border-radius: 6px;
             border-color: green;
             font-size: 14px;
-            z-sndex: 9999;
+            z-index: 9999;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             transition: opacity 0.5s ease;
             opacity: 0;
